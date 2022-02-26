@@ -1,10 +1,8 @@
-package entities;
+package com.nicholas.springsecuritywithjwt.entities;
 
-import ch.qos.logback.core.joran.action.ActionUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
+    private  String username;
     private String password;
 
     //relationship between the user and the roles
