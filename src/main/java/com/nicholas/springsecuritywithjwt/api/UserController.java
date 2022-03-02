@@ -1,15 +1,16 @@
 package com.nicholas.springsecuritywithjwt.api;
 
 import com.nicholas.springsecuritywithjwt.entities.AppUser;
+import com.nicholas.springsecuritywithjwt.entities.UserRoles;
 import com.nicholas.springsecuritywithjwt.userservice.UserService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,9 +26,39 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    //post data to the server
-    @GetMapping("/users")
+    //post user data to the server
+    @PostMapping("/user/save")
     public ResponseEntity<AppUser> saveUsers(@RequestBody AppUser appUser){
-        return ResponseEntity.ok().body(userService.saveAppUser(appUser));
+
+        //send 201 response to show that a resource was created in the server, by getting the server's URI
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/user/save").toUriString());
+        return ResponseEntity.created(uri).body(userService.saveAppUser(appUser));
     }
+
+    //adding  roles to the database
+    @PostMapping("/role/save")
+    public ResponseEntity<UserRoles> saveRoles(@RequestBody UserRoles userRoles){
+
+        //send 201 response to show that a resource was created in the server, by getting the server's URI
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/role/save").toUriString());
+        return ResponseEntity.created(uri).body(userService.saveRoles(userRoles));
+
+    }
+
+    //assigning role to specific user
+    @PostMapping("/role/assignRole")
+    public ResponseEntity<?> addRolesRoUsers(@RequestBody AssignUserRoles formRoles){
+        userService.addRoleToUser(
+                formRoles.getUsername(), formRoles.getRoleName());
+        return ResponseEntity.ok().build(); //not returning body because it only sends response
+
+    }
+}
+
+@Data//to enhance getters and setters
+class  AssignUserRoles {
+    private String username;
+    private String roleName;
 }
